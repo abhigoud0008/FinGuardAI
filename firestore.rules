@@ -1,0 +1,87 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 1. Global Default Deny Catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Common Security Helper Functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Users Collection & User Subcollections (Strict Owner RBAC)
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidId(userId) && incoming().uid == userId;
+      allow update: if isOwner(userId) && incoming().uid == userId;
+      allow delete: if false; // Profile deletion requires administrative action
+
+      // 1. Transactions subcollection
+      match /transactions/{transactionId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(transactionId) && incoming().userId == userId;
+        allow update: if isOwner(userId) && incoming().userId == userId;
+        allow delete: if isOwner(userId);
+      }
+
+      // 2. Scam Reports subcollection
+      match /scamReports/{scamId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(scamId) && incoming().userId == userId;
+        allow update: if isOwner(userId) && incoming().userId == userId;
+        allow delete: if isOwner(userId);
+      }
+
+      // 3. Investment Assets subcollection
+      match /assets/{assetId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(assetId) && incoming().userId == userId;
+        allow update: if isOwner(userId) && incoming().userId == userId;
+        allow delete: if isOwner(userId);
+      }
+
+      // 4. Goal Plans subcollection
+      match /goalPlans/{goalId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(goalId) && incoming().userId == userId;
+        allow update: if isOwner(userId) && incoming().userId == userId;
+        allow delete: if isOwner(userId);
+      }
+
+      // 5. Future Me Simulations subcollection
+      match /simulations/{simId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(simId) && incoming().userId == userId;
+        allow update: if isOwner(userId) && incoming().userId == userId;
+        allow delete: if isOwner(userId);
+      }
+
+      // 6. Family Members subcollection
+      match /familyMembers/{memberId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(memberId) && incoming().userId == userId;
+        allow update: if isOwner(userId) && incoming().userId == userId;
+        allow delete: if isOwner(userId);
+      }
+    }
+  }
+}

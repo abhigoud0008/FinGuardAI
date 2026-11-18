@@ -1,0 +1,160 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User account profile and financial baseline parameters",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Auth UID" },
+        "name": { "type": "string", "maxLength": 100 },
+        "email": { "type": "string", "format": "email", "maxLength": 120 },
+        "username": { "type": "string", "maxLength": 50, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "persona": { "type": "string", "enum": ["student", "salaried", "small_business", "new_investor"] },
+        "monthlyIncome": { "type": "number" },
+        "monthlyExpenses": { "type": "number" },
+        "existingSavings": { "type": "number" },
+        "emergencyFund": { "type": "number" },
+        "totalDebt": { "type": "number" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["uid", "name", "email", "monthlyIncome"]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "description": "Financial debit or credit transaction parsed from SMS or manual input",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128 },
+        "date": { "type": "string" },
+        "merchant": { "type": "string", "maxLength": 150 },
+        "amount": { "type": "number" },
+        "type": { "type": "string", "enum": ["debit", "credit"] },
+        "category": { "type": "string", "enum": ["Food", "Travel", "Shopping", "Utilities", "Investment", "Entertainment", "Health", "Salary", "Other"] },
+        "paymentMethod": { "type": "string", "enum": ["UPI", "Credit Card", "Debit Card", "Net Banking", "Cash"] },
+        "notes": { "type": "string", "maxLength": 300 },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["userId", "amount", "type", "category"]
+    },
+    "ScamReport": {
+      "title": "ScamReport",
+      "description": "Cyber scam analysis result and 1930 incident report",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128 },
+        "timestamp": { "type": "string" },
+        "inputContent": { "type": "string", "maxLength": 3000 },
+        "riskScore": { "type": "number" },
+        "riskLevel": { "type": "string", "enum": ["Safe", "Suspicious", "Dangerous"] },
+        "scamType": { "type": "string", "maxLength": 150 },
+        "threatCategory": { "type": "string", "maxLength": 100 },
+        "indicators": { "type": "array" },
+        "explanation": { "type": "string", "maxLength": 2000 },
+        "recommendedActions": { "type": "array" }
+      },
+      "required": ["userId", "riskScore", "riskLevel", "scamType"]
+    },
+    "InvestmentAsset": {
+      "title": "InvestmentAsset",
+      "description": "Investment portfolio asset holding",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 150 },
+        "type": { "type": "string", "enum": ["Mutual Fund", "SIP", "Stock", "Fixed Deposit", "Gold", "PPF", "Crypto"] },
+        "investedAmount": { "type": "number" },
+        "currentValue": { "type": "number" },
+        "monthlySip": { "type": "number" },
+        "category": { "type": "string", "enum": ["Equity", "Debt", "Commodity", "Cash / Liquid"] },
+        "riskLevel": { "type": "string", "enum": ["Low", "Moderate", "High"] }
+      },
+      "required": ["userId", "name", "investedAmount", "currentValue"]
+    },
+    "GoalPlan": {
+      "title": "GoalPlan",
+      "description": "Lifecycle milestone goal with calculated monthly SIP requirements",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 150 },
+        "goalType": { "type": "string" },
+        "targetAmount": { "type": "number" },
+        "currentAmount": { "type": "number" },
+        "targetMonths": { "type": "number" },
+        "monthlyRequired": { "type": "number" },
+        "projectedDate": { "type": "string" },
+        "successProbability": { "type": "number" },
+        "suggestedVehicle": { "type": "string" },
+        "status": { "type": "string" }
+      },
+      "required": ["userId", "title", "targetAmount"]
+    },
+    "FutureMeSimulation": {
+      "title": "FutureMeSimulation",
+      "description": "Simulated future decision impact record",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128 },
+        "purchaseName": { "type": "string", "maxLength": 150 },
+        "cost": { "type": "number" },
+        "category": { "type": "string" },
+        "paymentType": { "type": "string" },
+        "currentScore": { "type": "number" },
+        "projectedScore": { "type": "number" },
+        "emergencyFundBefore": { "type": "number" },
+        "emergencyFundAfter": { "type": "number" },
+        "savingsDelayMonths": { "type": "number" },
+        "debtBurdenChange": { "type": "string" },
+        "financialRisk": { "type": "string" },
+        "recommendation": { "type": "string", "maxLength": 1000 },
+        "timestamp": { "type": "string" }
+      },
+      "required": ["userId", "purchaseName", "cost", "projectedScore"]
+    },
+    "FamilyMember": {
+      "title": "FamilyMember",
+      "description": "Family member protected by FinGuard Shield",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 100 },
+        "relationship": { "type": "string" },
+        "phoneNumber": { "type": "string", "maxLength": 30 },
+        "protectionStatus": { "type": "string" },
+        "threatsBlocked": { "type": "number" },
+        "lastActive": { "type": "string" }
+      },
+      "required": ["userId", "name", "relationship"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile collection isolated per authenticated user"
+    },
+    "/users/{userId}/transactions/{transactionId}": {
+      "schema": "Transaction",
+      "description": "Transactions for a specific user"
+    },
+    "/users/{userId}/scamReports/{scamId}": {
+      "schema": "ScamReport",
+      "description": "Scam reports and threat detections for a user"
+    },
+    "/users/{userId}/assets/{assetId}": {
+      "schema": "InvestmentAsset",
+      "description": "Investments portfolio holdings"
+    },
+    "/users/{userId}/goalPlans/{goalId}": {
+      "schema": "GoalPlan",
+      "description": "Life milestone savings goals"
+    },
+    "/users/{userId}/simulations/{simId}": {
+      "schema": "FutureMeSimulation",
+      "description": "Future Me decision simulation logs"
+    },
+    "/users/{userId}/familyMembers/{memberId}": {
+      "schema": "FamilyMember",
+      "description": "Protected family members"
+    }
+  }
+}
