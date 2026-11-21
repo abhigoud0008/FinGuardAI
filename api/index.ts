@@ -27,7 +27,6 @@ if (process.env.VERCEL) {
       code: 'DEMO_STORAGE_DISABLED',
     });
   });
-  });
 }
 
 // Initialize Google Gemini Client
