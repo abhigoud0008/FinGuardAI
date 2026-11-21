@@ -20,12 +20,13 @@ if (process.env.VERCEL) {
       code: 'DEMO_AUTH_DISABLED',
     });
   });
-  app.post('/api/family/members', (_req: Request, res: Response) => {
+  app.use('/api/family', (_req: Request, res: Response) => {
     res.setHeader('Cache-Control', 'no-store');
     return res.status(503).json({
-      error: 'Saving family contacts requires authenticated persistent storage and is disabled in the public demo.',
+      error: 'Family data endpoints are disabled in this public demo until secure account storage is implemented.',
       code: 'DEMO_STORAGE_DISABLED',
     });
+  });
   });
 }
 
@@ -1249,7 +1250,7 @@ app.post('/api/family/members', (req: Request, res: Response) => {
 // NEW HACKATHON FEATURE 4: One-Tap Official 1930 Scam Reporting API
 // ==============================================================
 app.post('/api/scam/generate-report', (req: Request, res: Response) => {
-  const { scamData, victimName = 'Abhishek Goud', victimPhone = '+91 98765 00000' } = req.body;
+  const { scamData, victimName = 'Demo User', victimPhone = 'Not provided' } = req.body;
   const incidentId = `MHA-1930-${Date.now().toString().slice(-6)}`;
   const dateStr = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
 
