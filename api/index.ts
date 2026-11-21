@@ -42,7 +42,7 @@ const ai = apiKey
     })
   : null;
 
-const MODEL_NAME = process.env.GEMINI_MODEL?.trim() || 'gemini-3.5-flash-lite';
+const MODEL_NAME = process.env.GEMINI_MODEL?.trim() || 'gemini-2.5-flash-lite';
 
 // Rate-limiting / Free Tier Quota handling
 let quotaExceededUntil = 0;
@@ -104,74 +104,8 @@ interface StoredUserAccount {
   };
 }
 
-const FIRESTORE_USERS: StoredUserAccount[] = [
-  {
-    id: 'user-abhishek-1',
-    username: 'abhigoud9346',
-    email: 'abhigoud9346@gmail.com',
-    name: 'Abhishek Goud',
-    passwordHash: 'password123',
-    authProvider: 'finguard',
-    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
-    createdAt: '2026-11-01T10:00:00.000Z',
-    profile: {
-      name: 'Abhishek Goud',
-      username: 'abhigoud9346',
-      email: 'abhigoud9346@gmail.com',
-      persona: 'salaried',
-      monthlyIncome: 95000,
-      monthlyExpenses: 42000,
-      existingSavings: 345000,
-      totalDebt: 320000,
-      authProvider: 'finguard',
-      avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
-    },
-  },
-  {
-    id: 'user-priya-2',
-    username: 'priya_investor',
-    email: 'priya.sharma@finguard.ai',
-    name: 'Priya Sharma',
-    passwordHash: 'investor2026',
-    authProvider: 'instagram',
-    avatarUrl: '/src/assets/images/avatar_financial_advisor_1794414559312.jpg',
-    createdAt: '2026-11-03T14:30:00.000Z',
-    profile: {
-      name: 'Priya Sharma',
-      username: 'priya_investor',
-      email: 'priya.sharma@finguard.ai',
-      persona: 'new_investor',
-      monthlyIncome: 145000,
-      monthlyExpenses: 52000,
-      existingSavings: 680000,
-      totalDebt: 110000,
-      authProvider: 'instagram',
-      avatarUrl: '/src/assets/images/avatar_financial_advisor_1794414559312.jpg',
-    },
-  },
-  {
-    id: 'user-rohit-3',
-    username: 'rohit_student',
-    email: 'rohit.v@campus.edu',
-    name: 'Rohit Verma',
-    passwordHash: 'student123',
-    authProvider: 'facebook',
-    avatarUrl: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=200&q=80',
-    createdAt: '2026-11-05T08:15:00.000Z',
-    profile: {
-      name: 'Rohit Verma',
-      username: 'rohit_student',
-      email: 'rohit.v@campus.edu',
-      persona: 'student',
-      monthlyIncome: 18000,
-      monthlyExpenses: 13500,
-      existingSavings: 24000,
-      totalDebt: 0,
-      authProvider: 'facebook',
-      avatarUrl: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=200&q=80',
-    },
-  },
-];
+// Demo-only: avoid exposing or persisting any mock account credentials.
+const FIRESTORE_USERS: StoredUserAccount[] = [];
 
 // Check username availability
 app.get('/api/auth/check-username/:username', (req: Request, res: Response) => {
