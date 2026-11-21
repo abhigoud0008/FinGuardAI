@@ -1,6 +1,6 @@
 # FinGuard AI - Intelligent Financial Assistant & Fraud Defense Copilot
 
-FinGuard AI is a production-ready, intelligent financial platform built for the Indian fintech ecosystem. It integrates **Google Gemini 3.8 Flash**, **Express/Node.js**, **Firebase Firestore**, and **React 19 + TypeScript + Tailwind CSS** to safeguard users against digital financial fraud, automate expense categorization from raw bank SMS/UPI alerts, optimize income taxes, diagnose investment portfolios, and provide AI-driven financial coaching with voice synthesis.
+FinGuard AI is a **hackathon/demo financial assistant, not a production banking or authentication system**. It is an intelligent financial platform built for the Indian fintech ecosystem. It integrates **Google Gemini 3.8 Flash**, **Express/Node.js**, a simulated in-memory account layer (**not connected to Firestore**), and **React 19 + TypeScript + Tailwind CSS** to safeguard users against digital financial fraud, automate expense categorization from raw bank SMS/UPI alerts, optimize income taxes, diagnose investment portfolios, and provide AI-driven financial coaching with voice synthesis.
 
 ---
 
@@ -31,11 +31,11 @@ FinGuard AI is a production-ready, intelligent financial platform built for the 
                    v                                             v
 +------------------------------------+        +-----------------------------------+
 |             AI TIER                |        |           PERSISTENCE TIER        |
-| Google Gemini 3.8 Flash            |        | Firebase Firestore                |
-| - High-throughput reasoning        |        | - users (Profiles & budgets)      |
-| - Multimodal receipt image vision  |        | - transactions (UPI & Card logs)  |
-| - Structured JSON Schemas          |        | - investments (SIPs & stocks)     |
-| - Low latency response times       |        | - taxReports & fraudReports       |
+| Google Gemini 3.8 Flash            |        | Mock/in-memory demo data          |
+| - High-throughput reasoning        |        | - Not durable across restarts     |
+| - Multimodal receipt image vision  |        | - Account API disabled on Vercel  |
+| - Structured JSON Schemas          |        | - No synced financial data        |
+| - Low latency response times       |        | - Sample data only                |
 +------------------------------------+        +-----------------------------------+
 ```
 
@@ -103,7 +103,10 @@ FinGuard AI is a production-ready, intelligent financial platform built for the 
 ├── index.html
 ├── metadata.json
 ├── package.json
-├── server.ts                       # Express backend + Gemini 3.8 Flash SDK endpoints
+├── server.ts                       # Traditional Express backend for local/Render
+├── api/index.ts                    # Single Vercel serverless API gateway (public demo)
+├── vercel.json                     # Vite + Vercel API path rewrites
+├── .env.vercel.example             # Vercel environment variable names
 ├── tsconfig.json
 ├── vite.config.ts
 └── src/
@@ -143,7 +146,7 @@ FinGuard AI is a production-ready, intelligent financial platform built for the 
 
 ---
 
-## Firestore Database Collections & Schema
+## Firestore Schema (Design Only — Not Implemented)
 
 ### Collections:
 1. `users`: Stores user profile, income, persona, and aggregate debt.
@@ -154,11 +157,34 @@ FinGuard AI is a production-ready, intelligent financial platform built for the 
 6. `fraudReports`: Evaluated suspicious messages, indicators, and risk scores.
 7. `chatHistory`: Multi-turn conversational sessions with the AI Coach.
 
-Security rules are enforced via `firestore.rules` guaranteeing document-level ownership by authenticated user (`request.auth.uid == userId`).
+`firestore.rules` is a planned ruleset only: the present Express server does **not** authenticate users against Firebase or persist these collections to Firestore. Do not claim real account security or store personal financial information until proper authentication and persistence are implemented.
 
 ---
 
-## Production Deployment Instructions
+## Vercel deployment (public demonstration only)
+
+> **Security notice:** This app's traditional backend contains simulated accounts and unverified social login logic, not production Firebase authentication. The Vercel API deliberately disables all `/api/auth/*` and `/api/family/*` routes; these return HTTP 503. Do not enter real passwords, bank messages, account numbers, receipts, or sensitive financial details. The app's existing browser-side demo state is not secure, authenticated storage.
+
+1. Open [Vercel New Project](https://vercel.com/new) and import [abhigoud0008/FinGuardAI](https://github.com/abhigoud0008/FinGuardAI), branch `main`.
+2. Framework preset: **Vite**. Root directory: `./`. Build command: `npx vite build` (frontend only). Output directory: `dist`. Node.js: 22.x.
+3. Add server-side environment variables in Vercel **Project → Settings → Environment Variables**: `GEMINI_API_KEY` (secret) and optional `GEMINI_MODEL` (defaults to `gemini-2.5-flash-lite` in the Vercel API). Verify the model ID is available to your API account. Do not put secrets in `VITE_` variables or commit a real `.env` file.
+4. Deploy. Vercel hosts the React site and routes `/api/*` to `api/index.ts` using `vercel.json`. This API is a serverless function, **not an always-running Express process**.
+5. Test `https://YOUR-VERCEL-DOMAIN/api/health` and confirm JSON `status: "ok"` (the Gemini configured flag reflects key presence, not successful Gemini calls). Test budget parsing, scam analysis, portfolio analysis, tax calculations, and financial coach with **fictional** data.
+6. Check the deployment's **Runtime Logs** if any endpoint returns 500 or HTML instead of JSON. Do not use the Vercel project for real accounts until authentication, authorization, durable storage, and input validation are implemented.
+
+### API/deployment limitations
+
+- **Authentication / family APIs:** Deliberately disabled on Vercel, because mock identities and in-memory records are not safe or durable. A frontend demo profile may still appear and **must not be mistaken for a verified login**.
+- **Tax assistant:** Contains historical tax assumptions and is **not verified for the current tax year**. Do not use it for filing or investment decisions.
+- **Gemini:** Uses a separately metered third-party API; model access, quota limits and possible charges differ from Vercel. Some analyses fall back to heuristic/sample results.
+- **Hosting:** Vercel Hobby has usage/function limits and permits personal, non-commercial use; it does not guarantee permanent running infrastructure. Large uploaded receipt images may exceed request-body limits.
+- **Future production work:** Add Firebase Authentication (real provider token validation), Firestore persistence with ownership rules, passwordless or securely hashed credentials, verified calculations, proper rate limiting, and delete any legacy plaintext demo credentials from source history if you intend to use this publicly.
+
+Documentation: [Vercel Vite](https://vercel.com/docs/frameworks/frontend/vite) and [Vercel Functions](https://vercel.com/docs/functions).
+
+---
+
+## Traditional server deployment (not Vercel)
 
 ### Local Development
 ```bash
